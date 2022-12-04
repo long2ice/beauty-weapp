@@ -1,0 +1,23 @@
+.search {
+  --search-background-color: #F3F4F6;
+  --search-content-background-color: #FFFFFF;
+  --search-padding: 0;
+}
+
+.action {
+  margin-left: auto;
+}
+
+.history {
+  margin-top: 40px;
+}
+
+.hot-search {
+  margin-top: 80px;
+}
+
+.words {
+  margin-top: 20px;
+}
+
+/*# sourceMappingURL=search.css.map */

@@ -1,0 +1,24 @@
+.main {
+  padding: 20px;
+}
+
+.badge {
+  padding: 10px 20px;
+  border-radius: 20px;
+  background-color: #e5e5e5;
+  font-size: small;
+  color: grey;
+}
+
+.badge-active {
+  background-color: #6190E8;
+  color: white;
+}
+
+.picture {
+  width: 100% !important;
+  height: 300px !important;
+  border-radius: 10px !important;
+}
+
+/*# sourceMappingURL=app.css.map */
