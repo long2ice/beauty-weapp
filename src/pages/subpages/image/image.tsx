@@ -4,9 +4,21 @@ import "./image.scss";
 import { Text, View } from "@tarojs/components";
 import { useEffect, useState } from "react";
 import Taro, { navigateBack } from "@tarojs/taro";
-import { favoritePicture, getPicturesByTag } from "../../../api/picture";
+import {
+  favoritePicture,
+  getPicturesByTag,
+  likePicture,
+} from "../../../api/picture";
 import { Swiper } from "@taroify/core";
 import { getSetting, saveImageToPhotosAlbum } from "@tarojs/taro";
+import OpenButton from "../../../components/button";
+import {
+  LikeOutlined,
+  GoodJobOutlined,
+  ShareOutlined,
+  ArrowLeft,
+  Down,
+} from "@taroify/icons";
 
 export default function ImageView() {
   const params = getCurrentInstance()?.router?.params;
@@ -15,9 +27,14 @@ export default function ImageView() {
   const [animationData, setAnimationData] = useState<any>();
   const [animationDataIndicator, setAnimationDataIndicator] = useState<any>();
   const [index, setIndex] = useState(0);
-
+  Taro.useShareAppMessage(() => {
+    return {
+      title: "分享给你一张好看的图片",
+      path: `/pages/subpages/image/image?tag=${tag}&offset=${index}`,
+    };
+  });
   const [pictures, setPictures] = useState<Array<Picture>>([]);
-  const [favorite, setFavorite] = useState(false);
+  const [picture, setPicture] = useState<Picture>();
   const [offset, setOffset] = useState(params?.offset as number);
   const limit = 20;
   const animation = Taro.createAnimation({
@@ -35,18 +52,54 @@ export default function ImageView() {
   const favoritePic = async () => {
     pictures[index].favorite = !pictures[index].favorite;
     await favoritePicture(pictures[index].id);
-    setFavorite(pictures[index]?.favorite ?? false);
     if (pictures[index].favorite) {
       Taro.showToast({
         title: "收藏成功",
         icon: "success",
         duration: 2000,
       });
+      setPicture({
+        ...pictures[index],
+        favorite_count: pictures[index].favorite_count + 1,
+        favorite: true,
+      });
     } else {
       Taro.showToast({
         title: "取消收藏成功",
         icon: "none",
         duration: 2000,
+      });
+      setPicture({
+        ...pictures[index],
+        favorite_count: pictures[index].favorite_count - 1,
+        favorite: false,
+      });
+    }
+  };
+  const likePic = async () => {
+    pictures[index].like = !pictures[index].like;
+    await likePicture(pictures[index].id);
+    if (pictures[index].like) {
+      Taro.showToast({
+        title: "点赞成功",
+        icon: "success",
+        duration: 2000,
+      });
+      setPicture({
+        ...pictures[index],
+        like_count: pictures[index].like_count + 1,
+        like: true,
+      });
+    } else {
+      Taro.showToast({
+        title: "取消点赞成功",
+        icon: "none",
+        duration: 2000,
+      });
+      setPicture({
+        ...pictures[index],
+        like_count: pictures[index].like_count - 1,
+        like: false,
       });
     }
   };
@@ -75,21 +128,21 @@ export default function ImageView() {
   };
   const saveImage = async () => {
     let url = pictures[index].url;
-    getSetting().then(async (res) => {
-      if (res.authSetting["scope.writePhotosAlbum"]) {
-        await downloadImage(url);
-      } else {
-        await Taro.authorize({
-          scope: "scope.writePhotosAlbum",
-          async success() {
-            await downloadImage(url);
-          },
-        });
-      }
-    });
+    let setting = await getSetting();
+    if (setting.authSetting["scope.writePhotosAlbum"]) {
+      await downloadImage(url);
+    } else {
+      await Taro.authorize({
+        scope: "scope.writePhotosAlbum",
+        async success() {
+          await downloadImage(url);
+        },
+      });
+    }
   };
+
   useEffect(() => {
-    setFavorite(pictures[index]?.favorite ?? false);
+    setPicture(pictures[index]);
   }, [index]);
   useEffect(() => {
     (async () => {
@@ -98,7 +151,7 @@ export default function ImageView() {
         ...(await getPicturesByTag(tag, limit, offset, true)),
       ];
       setPictures(newPictures);
-      setFavorite(newPictures[index]?.favorite ?? false);
+      setPicture(newPictures[index]);
     })();
   }, [offset]);
   useEffect(() => {
@@ -155,49 +208,41 @@ export default function ImageView() {
                 }}
                 className="action-item"
               >
-                <Image src={require("../../../assets/toolbar/back.svg")} />
+                <ArrowLeft size={20} />
                 <Text>返回</Text>
               </View>
             </Flex.Item>
             <Flex.Item>
               <View onClick={favoritePic} className="action-item">
-                <Image
-                  src={
-                    favorite
-                      ? require("../../../assets/toolbar/favorites-fill.svg")
-                      : require("../../../assets/toolbar/favorites.svg")
-                  }
+                <LikeOutlined
+                  color={picture?.favorite ? "white" : "red"}
+                  size={20}
                 />
                 <Text>收藏</Text>
               </View>
             </Flex.Item>
             <Flex.Item>
               <View onClick={saveImage} className="action-item">
-                <Image src={require("../../../assets/toolbar/download.svg")} />
+                <Down size={20} />
                 <Text>下载</Text>
               </View>
             </Flex.Item>
             <Flex.Item>
-              <View
-                onClick={async () => {
-                  await navigateBack();
-                }}
-                className="action-item"
-              >
-                <Image src={require("../../../assets/toolbar/comment.svg")} />
-                <Text>评论</Text>
+              <View className="action-item" onClick={likePic}>
+                <GoodJobOutlined
+                  color={picture?.like ? "white" : "red"}
+                  size={20}
+                />
+                <Text>点赞</Text>
               </View>
             </Flex.Item>
             <Flex.Item>
-              <View
-                onClick={async () => {
-                  await navigateBack();
-                }}
-                className="action-item"
-              >
-                <Image src={require("../../../assets/toolbar/share.svg")} />
-                <Text>分享</Text>
-              </View>
+              <OpenButton openType="share">
+                <View className="action-item">
+                  <ShareOutlined size={20} />
+                  <Text>分享</Text>
+                </View>
+              </OpenButton>
             </Flex.Item>
           </Flex>
         </View>

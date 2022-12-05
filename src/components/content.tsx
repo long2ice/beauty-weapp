@@ -71,7 +71,7 @@ function Content(props: ContentProps, ref: Ref<ContentRef>) {
       <Flex wrap="wrap" gutter={6}>
         {pictures.map((picture, index) => (
           <Flex.Item span={8} key={picture.id}>
-            <ClickImage picture={picture} tag={tag} offset={index} />
+            <ClickImage url={picture.url} tag={tag} offset={index} />
           </Flex.Item>
         ))}
       </Flex>

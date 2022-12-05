@@ -11,11 +11,13 @@ import { navigateTo } from "@tarojs/taro";
 import Content from "../../components/content";
 import { ContentRef } from "../../../types/props";
 import ClickImage from "../../components/image";
+import * as auth from "../../services/auth";
 
 export default function Home() {
   const [hotPictures, setHotPictures] = useState<Array<Picture>>([]);
   useEffect(() => {
     (async () => {
+      await auth.login();
       setHotPictures(await getHotPictures(20, 0));
     })();
   }, []);
@@ -77,7 +79,7 @@ export default function Home() {
             <Flex gutter={6}>
               {hotPictures.map((picture, index) => (
                 <Flex.Item span={8} key={picture.id}>
-                  <ClickImage picture={picture} tag="热门" offset={index} />
+                  <ClickImage url={picture.url} tag="热门" offset={index} />
                 </Flex.Item>
               ))}
             </Flex>

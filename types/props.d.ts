@@ -1,4 +1,5 @@
 import { ReactNode, RefObject } from "react";
+import { ButtonProps } from "@tarojs/components";
 
 interface LayoutProps {
   children?: ReactNode;
@@ -23,7 +24,13 @@ interface ContentProps {
 }
 
 interface ClickImageProps {
-  picture: Picture;
-  tag: string;
+  url: string;
+  tag?: string;
+  collection_id?: number;
   offset: number;
+}
+
+interface OpenButtonProps {
+  children: ReactNode;
+  openType: ButtonProps.OpenType;
 }

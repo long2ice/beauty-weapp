@@ -7,21 +7,21 @@ export async function getPicturesByTag(
   tag: string,
   limit: number,
   offset: number,
-  favorite: boolean = false
+  extra: boolean = false
 ) {
   if (tag == "最新") {
-    return await getPictures(limit, offset, favorite);
+    return await getPictures(limit, offset, extra);
   } else if (tag == "热门") {
-    return await getHotPictures(limit, offset, favorite);
+    return await getHotPictures(limit, offset, extra);
   } else {
-    return await searchPictures(tag, limit, offset, favorite);
+    return await searchPictures(tag, limit, offset, extra);
   }
 }
 
 export async function getHotPictures(
   limit: number,
   offset: number,
-  favorite: boolean = false
+  extra: boolean = false
 ) {
   const { data } = await request({
     url: BASE_URL + "/hot",
@@ -29,7 +29,7 @@ export async function getHotPictures(
     data: {
       limit,
       offset,
-      favorite,
+      extra,
     },
   });
   return data;
@@ -38,7 +38,7 @@ export async function getHotPictures(
 export async function getPictures(
   limit: number,
   offset: number,
-  favorite: boolean = false
+  extra: boolean = false
 ) {
   const { data } = await request({
     url: BASE_URL,
@@ -46,7 +46,7 @@ export async function getPictures(
     data: {
       limit,
       offset,
-      favorite,
+      extra,
     },
   });
   return data;
@@ -64,7 +64,7 @@ export async function searchPictures(
   keyword: string,
   limit: number,
   offset: number,
-  favorite: boolean = false
+  extra: boolean = false
 ) {
   const { data } = await request({
     url: BASE_URL + "/search",
@@ -73,7 +73,7 @@ export async function searchPictures(
       keyword,
       limit,
       offset,
-      favorite,
+      extra,
     },
   });
   return data;
@@ -90,6 +90,14 @@ export async function getPictureTag() {
 export async function favoritePicture(id: number) {
   const { data } = await request({
     url: BASE_URL + `/${id}/favorite`,
+    method: "POST",
+  });
+  return data;
+}
+
+export async function likePicture(id: number) {
+  const { data } = await request({
+    url: BASE_URL + `/${id}/like`,
     method: "POST",
   });
   return data;
