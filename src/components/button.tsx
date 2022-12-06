@@ -6,6 +6,7 @@ export default function OpenButton(props: OpenButtonProps) {
     <Button
       openType={props.openType}
       plain
+      onChooseAvatar={props.onChooseAvatar}
       style={{
         backgroundColor: "transparent",
         border: "none",

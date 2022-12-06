@@ -1,3 +1,19 @@
+.menu {
+  border-radius: 10px;
+  margin-top: 20px;
+}
 
+.header {
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.favorite-container {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+}
 
 /*# sourceMappingURL=user.css.map */

@@ -1,5 +1,6 @@
-import { request } from "@tarojs/taro";
+import Taro, { request } from "@tarojs/taro";
 import { API_URL } from "../constants";
+import { getHeaders } from "../interceptor";
 
 const BASE_URL = API_URL + "/user";
 
@@ -11,13 +12,23 @@ export async function getUser() {
   return data;
 }
 
-export async function updateUser(isCloudEnabled: boolean) {
+export async function updateUserAvatar(
+  avatar: string
+): Promise<UserType | ErrorType> {
+  let { data } = await Taro.uploadFile({
+    url: BASE_URL,
+    filePath: avatar,
+    name: "avatar",
+    header: await getHeaders({}),
+  });
+  return JSON.parse(data);
+}
+
+export async function updateUser(body): Promise<UserType | ErrorType> {
   let { data } = await request({
     url: BASE_URL,
     method: "PUT",
-    data: {
-      is_cloud_enabled: isCloudEnabled,
-    },
+    data: body,
   });
   return data;
 }

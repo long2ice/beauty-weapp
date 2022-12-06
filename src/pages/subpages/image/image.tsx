@@ -1,42 +1,51 @@
-import { Flex, Image } from "@taroify/core";
+import { Flex, Image, Popup, Swiper } from "@taroify/core";
 import { getCurrentInstance } from "@tarojs/runtime";
 import "./image.scss";
 import { Text, View } from "@tarojs/components";
 import { useEffect, useState } from "react";
-import Taro, { navigateBack } from "@tarojs/taro";
+import Taro, {
+  getSetting,
+  navigateBack,
+  saveImageToPhotosAlbum,
+} from "@tarojs/taro";
 import {
   favoritePicture,
+  getFavoritePictures,
   getPicturesByTag,
   likePicture,
 } from "../../../api/picture";
-import { Swiper } from "@taroify/core";
-import { getSetting, saveImageToPhotosAlbum } from "@tarojs/taro";
 import OpenButton from "../../../components/button";
 import {
-  LikeOutlined,
-  GoodJobOutlined,
-  ShareOutlined,
   ArrowLeft,
   Down,
+  GoodJobOutlined,
+  LabelOutlined,
+  LikeOutlined,
+  ShareOutlined,
 } from "@taroify/icons";
+import { getCollectionPictures } from "../../../api/collection";
 
 export default function ImageView() {
   const params = getCurrentInstance()?.router?.params;
   const tag = params?.tag as string;
+  const collection_id = params?.collection_id as string;
+  const favorite = params?.favorite as boolean;
   const [toolbarHidden, setToolbarHidden] = useState(false);
   const [animationData, setAnimationData] = useState<any>();
   const [animationDataIndicator, setAnimationDataIndicator] = useState<any>();
   const [index, setIndex] = useState(0);
+  const [open, setOpen] = useState(false);
   Taro.useShareAppMessage(() => {
     return {
       title: "分享给你一张好看的图片",
-      path: `/pages/subpages/image/image?tag=${tag}&offset=${index}`,
+      path: `/pages/subpages/image/image?tag=${tag}&offset=${index}&collection_id=${collection_id}`,
     };
   });
   const [pictures, setPictures] = useState<Array<Picture>>([]);
   const [picture, setPicture] = useState<Picture>();
   const [offset, setOffset] = useState(params?.offset as number);
   const limit = 20;
+  const [total, setTotal] = useState(0);
   const animation = Taro.createAnimation({
     duration: 500,
     timingFunction: "linear",
@@ -51,17 +60,15 @@ export default function ImageView() {
   });
   const favoritePic = async () => {
     pictures[index].favorite = !pictures[index].favorite;
-    await favoritePicture(pictures[index].id);
     if (pictures[index].favorite) {
       Taro.showToast({
         title: "收藏成功",
         icon: "success",
         duration: 2000,
       });
+      pictures[index].favorite_count++;
       setPicture({
         ...pictures[index],
-        favorite_count: pictures[index].favorite_count + 1,
-        favorite: true,
       });
     } else {
       Taro.showToast({
@@ -69,26 +76,24 @@ export default function ImageView() {
         icon: "none",
         duration: 2000,
       });
+      pictures[index].favorite_count--;
       setPicture({
         ...pictures[index],
-        favorite_count: pictures[index].favorite_count - 1,
-        favorite: false,
       });
     }
+    await favoritePicture(pictures[index].id);
   };
   const likePic = async () => {
     pictures[index].like = !pictures[index].like;
-    await likePicture(pictures[index].id);
     if (pictures[index].like) {
       Taro.showToast({
         title: "点赞成功",
         icon: "success",
         duration: 2000,
       });
+      pictures[index].like_count++;
       setPicture({
         ...pictures[index],
-        like_count: pictures[index].like_count + 1,
-        like: true,
       });
     } else {
       Taro.showToast({
@@ -96,12 +101,12 @@ export default function ImageView() {
         icon: "none",
         duration: 2000,
       });
+      pictures[index].like_count--;
       setPicture({
         ...pictures[index],
-        like_count: pictures[index].like_count - 1,
-        like: false,
       });
     }
+    await likePicture(pictures[index].id);
   };
   const downloadImage = async (url: string) => {
     let res = await Taro.downloadFile({
@@ -146,10 +151,21 @@ export default function ImageView() {
   }, [index]);
   useEffect(() => {
     (async () => {
-      let newPictures = [
-        ...pictures,
-        ...(await getPicturesByTag(tag, limit, offset, true)),
-      ];
+      let result;
+      let newPictures;
+      if (tag != "undefined") {
+        result = await getPicturesByTag(tag, limit, offset, true);
+        setTotal(result.total);
+        newPictures = [...pictures, ...result.data];
+      } else if (collection_id !== "undefined") {
+        result = await getCollectionPictures(Number(collection_id));
+        setTotal(result.length);
+        newPictures = result.data;
+      } else if (favorite) {
+        result = await getFavoritePictures(limit, offset, true);
+        setTotal(result.total);
+        newPictures = result.data;
+      }
       setPictures(newPictures);
       setPicture(newPictures[index]);
     })();
@@ -167,12 +183,26 @@ export default function ImageView() {
       setAnimationDataIndicator(animationIndicator.export());
     }
   }, [toolbarHidden]);
+  const formatCount = (count: number) => {
+    if (count > 100) {
+      return "99+";
+    }
+    return count;
+  };
   return (
     <View>
       <Swiper
         onChange={(v) => {
           if (pictures.length == v + 1 && v == index + 1) {
-            setOffset(offset + limit);
+            if (offset + limit < total) {
+              setOffset(offset + limit);
+            } else {
+              Taro.showToast({
+                title: "已经是最后一张了",
+                icon: "none",
+                duration: 2000,
+              });
+            }
           }
           setIndex(v);
         }}
@@ -195,7 +225,7 @@ export default function ImageView() {
           className="indicator"
           animation={animationDataIndicator}
         >
-          {index + 1} / {pictures.length}
+          {index + 1} / {total}
         </Swiper.Indicator>
       </Swiper>
       <View className="container">
@@ -215,10 +245,10 @@ export default function ImageView() {
             <Flex.Item>
               <View onClick={favoritePic} className="action-item">
                 <LikeOutlined
-                  color={picture?.favorite ? "white" : "red"}
+                  color={picture?.favorite ? "red" : "white"}
                   size={20}
                 />
-                <Text>收藏</Text>
+                <Text>收藏({formatCount(picture?.favorite_count ?? 0)})</Text>
               </View>
             </Flex.Item>
             <Flex.Item>
@@ -230,10 +260,16 @@ export default function ImageView() {
             <Flex.Item>
               <View className="action-item" onClick={likePic}>
                 <GoodJobOutlined
-                  color={picture?.like ? "white" : "red"}
+                  color={picture?.like ? "red" : "white"}
                   size={20}
                 />
-                <Text>点赞</Text>
+                <Text>点赞({formatCount(picture?.like_count ?? 0)})</Text>
+              </View>
+            </Flex.Item>
+            <Flex.Item>
+              <View onClick={() => setOpen(true)} className="action-item">
+                <LabelOutlined size={20} />
+                <Text>简介</Text>
               </View>
             </Flex.Item>
             <Flex.Item>
@@ -247,6 +283,15 @@ export default function ImageView() {
           </Flex>
         </View>
       </View>
+      <Popup
+        open={open}
+        placement="left"
+        onClose={() => setOpen(false)}
+        className="description"
+        rounded
+      >
+        {picture?.description}
+      </Popup>
     </View>
   );
 }

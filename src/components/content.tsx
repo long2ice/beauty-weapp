@@ -7,20 +7,34 @@ import {
   useImperativeHandle,
   useState,
 } from "react";
-import { getPictures, getPicturesByTag, getPictureTag } from "../api/picture";
+import {
+  getFavoritePictures,
+  getPicturesByTag,
+  getPictureTag,
+} from "../api/picture";
 import { ContentProps, ContentRef } from "../../types/props";
 import "./content.scss";
 import ClickImage from "./image";
+import Taro from "@tarojs/taro";
 
 function Content(props: ContentProps, ref: Ref<ContentRef>) {
   const [tags, setTags] = useState<Array<string>>([]);
   const [pictures, setPictures] = useState<Array<Picture>>([]);
+  const [total, setTotal] = useState(0);
   const [tag, setTag] = useState<string>(props.tag);
   const [offset, setOffset] = useState(0);
   const limit = props.limit;
   useImperativeHandle(ref, () => ({
     refresh: () => {
-      setOffset(offset + limit);
+      if (offset + limit < total) {
+        setOffset(offset + limit);
+      } else {
+        Taro.showToast({
+          title: "没有更多图片了",
+          icon: "none",
+          duration: 2000,
+        });
+      }
     },
     tag: tag,
   }));
@@ -33,12 +47,23 @@ function Content(props: ContentProps, ref: Ref<ContentRef>) {
   }, []);
   useEffect(() => {
     (async () => {
-      setPictures(await getPicturesByTag(tag, limit, offset));
+      if (tag) {
+        let result = await getPicturesByTag(tag, limit, offset);
+        setPictures(result.data);
+        setTotal(result.total);
+      }
     })();
   }, [tag]);
   useEffect(() => {
     (async () => {
-      setPictures([...pictures, ...(await getPictures(limit, offset))]);
+      let result;
+      if (props.favorite) {
+        result = await getFavoritePictures(limit, offset);
+      } else {
+        result = await getPicturesByTag(tag, limit, offset);
+      }
+      setPictures([...pictures, ...result.data]);
+      setTotal(result.total);
     })();
   }, [offset]);
   return (
@@ -71,7 +96,12 @@ function Content(props: ContentProps, ref: Ref<ContentRef>) {
       <Flex wrap="wrap" gutter={6}>
         {pictures.map((picture, index) => (
           <Flex.Item span={8} key={picture.id}>
-            <ClickImage url={picture.url} tag={tag} offset={index} />
+            <ClickImage
+              url={picture.url}
+              tag={tag}
+              offset={index}
+              favorite={props.favorite}
+            />
           </Flex.Item>
         ))}
       </Flex>

@@ -12,7 +12,7 @@ export default function ClickImage(props: ClickImageProps) {
       fallback="加载失败"
       onClick={async () => {
         await navigateTo({
-          url: `/pages/subpages/image/image?tag=${props.tag}&offset=${props.offset}&collection_id=${props.collection_id}`,
+          url: `/pages/subpages/image/image?tag=${props.tag}&offset=${props.offset}&collection_id=${props.collection_id}&favorite=${props.favorite}`,
         });
       }}
     />

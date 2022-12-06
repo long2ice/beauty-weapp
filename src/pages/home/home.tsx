@@ -1,10 +1,8 @@
 import { ScrollView, Text, View } from "@tarojs/components";
 import "./home.css";
 import Layout from "../../components/layout";
-import { Navbar } from "@taroify/core";
-import { Search } from "@taroify/icons";
-import { Arrow } from "@taroify/icons";
-import { Flex } from "@taroify/core";
+import { Flex, Navbar } from "@taroify/core";
+import { Arrow, Search } from "@taroify/icons";
 import { useEffect, useRef, useState } from "react";
 import { getHotPictures } from "../../api/picture";
 import { navigateTo } from "@tarojs/taro";
@@ -18,7 +16,8 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       await auth.login();
-      setHotPictures(await getHotPictures(20, 0));
+      let result = await getHotPictures(20, 0);
+      setHotPictures(result.data);
     })();
   }, []);
 

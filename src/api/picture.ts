@@ -102,3 +102,20 @@ export async function likePicture(id: number) {
   });
   return data;
 }
+
+export async function getFavoritePictures(
+  limit: number,
+  offset: number,
+  extra: boolean = false
+) {
+  const { data } = await request({
+    url: BASE_URL + "/favorite",
+    method: "GET",
+    data: {
+      limit,
+      offset,
+      extra,
+    },
+  });
+  return data;
+}

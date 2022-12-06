@@ -50,4 +50,12 @@
   opacity: 0.6;
 }
 
+.description {
+  padding: 20px;
+  color: white;
+  background-color: black;
+  font-size: small;
+  opacity: 0.5;
+}
+
 /*# sourceMappingURL=image.css.map */

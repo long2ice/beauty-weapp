@@ -9,9 +9,16 @@ export default function SearchResult() {
   const params = getCurrentInstance()?.router?.params;
   const showTags = params?.showTags as boolean;
   const defaultTag = params?.tag as string;
+  const favorite = params?.favorite as boolean;
   const contentRef = useRef<ContentRef>(null);
+  let title = "分类";
+  if (favorite) {
+    title = "我的收藏";
+  } else if (defaultTag) {
+    title = defaultTag;
+  }
   return (
-    <Layout title={showTags ? "分类" : defaultTag}>
+    <Layout title={title}>
       <View className="main">
         <ScrollView
           scrollY
@@ -30,6 +37,7 @@ export default function SearchResult() {
             showTags={showTags}
             tag={defaultTag}
             ref={contentRef}
+            favorite={favorite}
             limit={15}
           />
         </ScrollView>

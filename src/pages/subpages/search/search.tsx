@@ -1,7 +1,7 @@
 import Layout from "../../../components/layout";
 import { useEffect, useState } from "react";
 import { Flex, Search } from "@taroify/core";
-import { View, Text } from "@tarojs/components";
+import { Text, View } from "@tarojs/components";
 import "./search.scss";
 import { DeleteOutlined } from "@taroify/icons";
 import {
@@ -28,6 +28,9 @@ export default function SearchPage() {
     })();
   }, []);
   const onSearch = async (keyword: string) => {
+    if (keyword.trim() === "") {
+      return;
+    }
     await addKeyword(keyword);
     await refreshHistory();
     await navigateTo({

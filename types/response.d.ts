@@ -5,6 +5,7 @@ interface Picture {
   like_count: number;
   favorite?: boolean;
   like?: boolean;
+  description: string;
 }
 
 interface CollectionType {
@@ -12,4 +13,13 @@ interface CollectionType {
   title: string;
   description: string;
   url: string;
+}
+
+interface UserType {
+  avatar: string;
+  nickname: string;
+}
+
+interface ErrorType {
+  error: string;
 }
