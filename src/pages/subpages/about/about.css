@@ -1,0 +1,26 @@
+.item {
+  margin-top: 30px;
+}
+
+.menu {
+  width: 100%;
+}
+
+.title {
+  font-size: large;
+}
+
+.footer {
+  margin-bottom: 40px;
+  padding-left: 40px;
+  padding-right: 40px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.footer-text {
+  color: grey;
+  font-size: small;
+}
+
+/*# sourceMappingURL=about.css.map */

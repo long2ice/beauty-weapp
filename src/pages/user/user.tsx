@@ -7,7 +7,7 @@ import { Avatar, Cell, Divider, Flex, Input } from "@taroify/core";
 import { Arrow, CommentOutlined, InfoOutlined } from "@taroify/icons";
 import OpenButton from "../../components/button";
 import { updateUser, updateUserAvatar } from "../../api/user";
-import { navigateTo } from "@tarojs/taro";
+import Taro, { navigateTo } from "@tarojs/taro";
 import ClickImage from "../../components/image";
 import { getFavoritePictures } from "../../api/picture";
 
@@ -21,14 +21,21 @@ export default function User() {
     let u = await storage.getUser();
     setUser(u);
   };
+  const initPage = async () => {
+    await refreshUser();
+    let ret = await getFavoritePictures(limit, 0);
+    setTotal(ret.total);
+    setPictures(ret.data);
+  };
   useEffect(() => {
     (async () => {
-      await refreshUser();
-      let ret = await getFavoritePictures(limit, 0);
-      setTotal(ret.total);
-      setPictures(ret.data);
+      await initPage();
     })();
   }, []);
+  Taro.usePullDownRefresh(async () => {
+    await initPage();
+    Taro.stopPullDownRefresh();
+  });
   const onChooseAvatar = async (res) => {
     let user = await updateUserAvatar(res.detail.avatarUrl);
     await storage.setUser(user);
@@ -108,12 +115,22 @@ export default function User() {
               borderTopLeftRadius: "10rpx",
               borderTopRightRadius: "10rpx",
             }}
+            onClick={async () => {
+              await navigateTo({
+                url: "/pages/subpages/feedback/feedback",
+              });
+            }}
           />
           <Cell
             icon={<InfoOutlined />}
             rightIcon={<Arrow />}
             clickable
             title="关于"
+            onClick={async () => {
+              await navigateTo({
+                url: "/pages/subpages/about/about",
+              });
+            }}
             style={{
               borderBottomLeftRadius: "10rpx",
               borderBottomRightRadius: "10rpx",

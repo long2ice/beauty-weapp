@@ -3,7 +3,13 @@ export default defineAppConfig({
   subPackages: [
     {
       root: "pages/subpages",
-      pages: ["search/search", "search-result/search-result", "image/image"],
+      pages: [
+        "search/search",
+        "search-result/search-result",
+        "image/image",
+        "about/about",
+        "feedback/feedback",
+      ],
     },
   ],
   window: {

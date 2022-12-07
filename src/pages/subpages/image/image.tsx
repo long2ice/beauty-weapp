@@ -37,7 +37,7 @@ export default function ImageView() {
   const [open, setOpen] = useState(false);
   Taro.useShareAppMessage(() => {
     return {
-      title: "分享给你一张好看的图片",
+      title: "分享给你一张好看的美女图片",
       path: `/pages/subpages/image/image?tag=${tag}&offset=${index}&collection_id=${collection_id}`,
     };
   });
