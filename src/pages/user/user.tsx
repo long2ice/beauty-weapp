@@ -1,5 +1,4 @@
 import { ScrollView, Text, View } from "@tarojs/components";
-import "./user.css";
 import Layout from "../../components/layout";
 import { useEffect, useState } from "react";
 import * as storage from "../../storages/user";
@@ -10,6 +9,8 @@ import { updateUser, updateUserAvatar } from "../../api/user";
 import Taro, { navigateTo } from "@tarojs/taro";
 import ClickImage from "../../components/image";
 import { getFavoritePictures } from "../../api/picture";
+import * as service from "../../services/user";
+import "./user.scss";
 
 export default function User() {
   const [user, setUser] = useState<UserType>();
@@ -18,7 +19,7 @@ export default function User() {
   const limit = 9;
 
   const refreshUser = async () => {
-    let u = await storage.getUser();
+    let u = await service.getUser();
     setUser(u);
   };
   const initPage = async () => {
@@ -66,6 +67,7 @@ export default function User() {
                 value={user?.nickname}
                 type="nickname"
                 onBlur={onUpdateNickname}
+                className="nickname"
               />
             </Flex.Item>
           </Flex>

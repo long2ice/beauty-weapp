@@ -22,7 +22,7 @@ interface ContentProps {
   tag: string;
   showTags: boolean;
   limit: number;
-  favorite: boolean;
+  favorite?: boolean;
 }
 
 interface ClickImageProps {

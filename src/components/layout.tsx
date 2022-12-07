@@ -1,6 +1,6 @@
 import { View } from "@tarojs/components";
 import { LayoutProps } from "../../types/props";
-import "./layout.css";
+import "./layout.scss";
 import MyNavbar from "./navbar";
 import { ConfigProvider } from "@taroify/core";
 

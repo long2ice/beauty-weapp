@@ -43,7 +43,7 @@ export default function ImageView() {
   });
   const [pictures, setPictures] = useState<Array<Picture>>([]);
   const [picture, setPicture] = useState<Picture>();
-  const [offset, setOffset] = useState(params?.offset as number);
+  const [offset, setOffset] = useState(Number(params?.offset ?? 0));
   const limit = 20;
   const [total, setTotal] = useState(0);
   const animation = Taro.createAnimation({
@@ -64,7 +64,6 @@ export default function ImageView() {
       Taro.showToast({
         title: "收藏成功",
         icon: "success",
-        duration: 2000,
       });
       pictures[index].favorite_count++;
       setPicture({
@@ -74,7 +73,6 @@ export default function ImageView() {
       Taro.showToast({
         title: "取消收藏成功",
         icon: "none",
-        duration: 2000,
       });
       pictures[index].favorite_count--;
       setPicture({
@@ -89,7 +87,6 @@ export default function ImageView() {
       Taro.showToast({
         title: "点赞成功",
         icon: "success",
-        duration: 2000,
       });
       pictures[index].like_count++;
       setPicture({
@@ -99,7 +96,6 @@ export default function ImageView() {
       Taro.showToast({
         title: "取消点赞成功",
         icon: "none",
-        duration: 2000,
       });
       pictures[index].like_count--;
       setPicture({
@@ -119,14 +115,12 @@ export default function ImageView() {
         Taro.showToast({
           title: "保存成功",
           icon: "success",
-          duration: 2000,
         });
       });
     } else {
       Taro.showToast({
         title: "下载失败",
         icon: "none",
-        duration: 2000,
       });
       return "";
     }
@@ -160,7 +154,7 @@ export default function ImageView() {
       } else if (collection_id !== "undefined") {
         result = await getCollectionPictures(Number(collection_id));
         setTotal(result.length);
-        newPictures = result.data;
+        newPictures = result;
       } else if (favorite) {
         result = await getFavoritePictures(limit, offset, true);
         setTotal(result.total);
@@ -174,7 +168,7 @@ export default function ImageView() {
     if (toolbarHidden) {
       animation.translateY(100).step();
       setAnimationData(animation.export());
-      animationIndicator.translateY(75).step();
+      animationIndicator.translateY(60).step();
       setAnimationDataIndicator(animationIndicator.export());
     } else {
       animation.translateY(0).step();

@@ -61,9 +61,9 @@ export default function SearchPage() {
               <DeleteOutlined onClick={onClear} />
             </Flex.Item>
           </Flex>
-          <Flex className="words" gutter={6}>
+          <Flex className="words" gutter={6} wrap="wrap">
             {history.map((item) => (
-              <Flex.Item key={item}>
+              <Flex.Item key={item} className="word-item">
                 <Text
                   className="badge"
                   onClick={async () => {
@@ -78,9 +78,9 @@ export default function SearchPage() {
         </View>
         <View className="hot-search">
           <Text>大家都在搜</Text>
-          <Flex className="words" gutter={6}>
+          <Flex className="words" gutter={6} wrap="wrap">
             {hotKeywords.map((item) => (
-              <Flex.Item key={item}>
+              <Flex.Item key={item} className="word-item">
                 <Text
                   className="badge"
                   onClick={async () => {

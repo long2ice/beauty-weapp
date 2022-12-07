@@ -16,7 +16,7 @@ export async function updateUserAvatar(
   avatar: string
 ): Promise<UserType | ErrorType> {
   let { data } = await Taro.uploadFile({
-    url: BASE_URL,
+    url: BASE_URL + "/avatar",
     filePath: avatar,
     name: "avatar",
     header: await getHeaders({}),

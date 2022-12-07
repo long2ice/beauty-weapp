@@ -25,9 +25,18 @@ function Content(props: ContentProps, ref: Ref<ContentRef>) {
   const [offset, setOffset] = useState(0);
   const limit = props.limit;
   useImperativeHandle(ref, () => ({
-    refresh: () => {
+    refresh: async () => {
       if (offset + limit < total) {
-        setOffset(offset + limit);
+        let newOffset = offset + limit;
+        setOffset(newOffset);
+        let result;
+        if (props.favorite) {
+          result = await getFavoritePictures(limit, newOffset);
+        } else {
+          result = await getPicturesByTag(tag, limit, newOffset);
+        }
+        setPictures([...pictures, ...result.data]);
+        setTotal(result.total);
       } else {
         Taro.showToast({
           title: "没有更多图片了",
@@ -43,29 +52,23 @@ function Content(props: ContentProps, ref: Ref<ContentRef>) {
       if (props.showTags) {
         setTags(await getPictureTag());
       }
+      if (props.favorite) {
+        let result = await getFavoritePictures(limit, offset);
+        setPictures(result.data);
+        setTotal(result.total);
+      }
     })();
   }, []);
   useEffect(() => {
     (async () => {
       if (tag) {
-        let result = await getPicturesByTag(tag, limit, offset);
+        setOffset(0);
+        let result = await getPicturesByTag(tag, limit, 0);
         setPictures(result.data);
         setTotal(result.total);
       }
     })();
   }, [tag]);
-  useEffect(() => {
-    (async () => {
-      let result;
-      if (props.favorite) {
-        result = await getFavoritePictures(limit, offset);
-      } else {
-        result = await getPicturesByTag(tag, limit, offset);
-      }
-      setPictures([...pictures, ...result.data]);
-      setTotal(result.total);
-    })();
-  }, [offset]);
   return (
     <>
       {props.showTags && (

@@ -1,5 +1,4 @@
 import { ScrollView, Text, View } from "@tarojs/components";
-import "./home.css";
 import Layout from "../../components/layout";
 import { Flex, Navbar } from "@taroify/core";
 import { Arrow, Search } from "@taroify/icons";
@@ -10,6 +9,7 @@ import Content from "../../components/content";
 import { ContentRef } from "../../../types/props";
 import ClickImage from "../../components/image";
 import * as auth from "../../services/auth";
+import "./home.scss";
 
 export default function Home() {
   const [hotPictures, setHotPictures] = useState<Array<Picture>>([]);
