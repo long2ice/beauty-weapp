@@ -14,11 +14,18 @@ export default function Collection() {
   const limit = 12;
   const [offset, setOffset] = useState(0);
   const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     (async () => {
+      setLoading(true);
+      Taro.showLoading({
+        title: "加载中",
+      });
       let result = await searchCollections(value, limit, offset);
       setTotal(result.total);
       setCollections([...collections, ...result.data]);
+      setLoading(false);
+      Taro.hideLoading();
     })();
   }, [offset]);
   const onSearch = async () => {
@@ -47,6 +54,9 @@ export default function Collection() {
             height: "80vh",
           }}
           onScrollToLower={() => {
+            if (loading) {
+              return;
+            }
             if (offset + limit < total) {
               setOffset(offset + limit);
             } else {

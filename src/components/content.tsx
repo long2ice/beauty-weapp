@@ -24,8 +24,16 @@ function Content(props: ContentProps, ref: Ref<ContentRef>) {
   const [tag, setTag] = useState<string>(props.tag);
   const [offset, setOffset] = useState(0);
   const limit = props.limit;
+  const [loading, setLoading] = useState(false);
   useImperativeHandle(ref, () => ({
     refresh: async () => {
+      if (loading) {
+        return;
+      }
+      setLoading(true);
+      Taro.showLoading({
+        title: "加载中",
+      });
       if (offset + limit < total) {
         let newOffset = offset + limit;
         setOffset(newOffset);
@@ -44,6 +52,8 @@ function Content(props: ContentProps, ref: Ref<ContentRef>) {
           duration: 2000,
         });
       }
+      setLoading(false);
+      Taro.hideLoading();
     },
     tag: tag,
   }));
