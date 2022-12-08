@@ -10,6 +10,7 @@ import Taro, { navigateTo } from "@tarojs/taro";
 import ClickImage from "../../components/image";
 import { getFavoritePictures } from "../../api/picture";
 import * as service from "../../services/user";
+
 import "./user.scss";
 
 export default function User() {
@@ -75,7 +76,7 @@ export default function User() {
         <View className="favorite-container">
           <Flex justify="start" align="center">
             <Flex.Item>
-              <Text className="title">我的收藏 ({total})</Text>
+              <Text className="title">{`我的收藏 (${total})`}</Text>
             </Flex.Item>
             <Flex.Item className="action">
               <View
@@ -112,7 +113,7 @@ export default function User() {
             icon={<CommentOutlined />}
             rightIcon={<Arrow />}
             clickable
-            title="反馈"
+            title="意见反馈"
             style={{
               borderTopLeftRadius: "10rpx",
               borderTopRightRadius: "10rpx",
@@ -127,7 +128,7 @@ export default function User() {
             icon={<InfoOutlined />}
             rightIcon={<Arrow />}
             clickable
-            title="关于"
+            title="关于我们"
             onClick={async () => {
               await navigateTo({
                 url: "/pages/subpages/about/about",

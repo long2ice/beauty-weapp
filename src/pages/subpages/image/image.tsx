@@ -242,7 +242,9 @@ export default function ImageView() {
                   color={picture?.favorite ? "red" : "white"}
                   size={20}
                 />
-                <Text>收藏({formatCount(picture?.favorite_count ?? 0)})</Text>
+                <Text>{`收藏(${formatCount(
+                  picture?.favorite_count ?? 0
+                )})`}</Text>
               </View>
             </Flex.Item>
             <Flex.Item>
@@ -257,7 +259,7 @@ export default function ImageView() {
                   color={picture?.like ? "red" : "white"}
                   size={20}
                 />
-                <Text>点赞({formatCount(picture?.like_count ?? 0)})</Text>
+                <Text>{`点赞(${formatCount(picture?.like_count ?? 0)})`}</Text>
               </View>
             </Flex.Item>
             <Flex.Item>
