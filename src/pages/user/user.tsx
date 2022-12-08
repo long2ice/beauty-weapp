@@ -24,10 +24,14 @@ export default function User() {
     setUser(u);
   };
   const initPage = async () => {
+    Taro.showLoading({
+      title: "加载中",
+    });
     await refreshUser();
     let ret = await getFavoritePictures(limit, 0);
     setTotal(ret.total);
     setPictures(ret.data);
+    Taro.hideLoading();
   };
   useEffect(() => {
     (async () => {

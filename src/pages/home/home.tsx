@@ -4,7 +4,7 @@ import { Flex, Navbar } from "@taroify/core";
 import { Arrow, Search } from "@taroify/icons";
 import { useEffect, useRef, useState } from "react";
 import { getHotPictures } from "../../api/picture";
-import { navigateTo } from "@tarojs/taro";
+import Taro, { navigateTo } from "@tarojs/taro";
 import Content from "../../components/content";
 import { ContentRef } from "../../../types/props";
 import ClickImage from "../../components/image";
@@ -15,9 +15,13 @@ export default function Home() {
   const [hotPictures, setHotPictures] = useState<Array<Picture>>([]);
   useEffect(() => {
     (async () => {
+      Taro.showLoading({
+        title: "加载中",
+      });
       await auth.login();
       let result = await getHotPictures(20, 0);
       setHotPictures(result.data);
+      Taro.hideLoading();
     })();
   }, []);
 
