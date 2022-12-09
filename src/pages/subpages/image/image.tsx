@@ -33,7 +33,8 @@ export default function ImageView() {
   const [toolbarHidden, setToolbarHidden] = useState(false);
   const [animationData, setAnimationData] = useState<any>();
   const [animationDataIndicator, setAnimationDataIndicator] = useState<any>();
-  const [index, setIndex] = useState(0);
+  const defaultOffset = Number(params?.offset ?? 0);
+  const [index, setIndex] = useState(defaultOffset);
   const [open, setOpen] = useState(false);
   Taro.useShareAppMessage(() => {
     return {
@@ -43,7 +44,7 @@ export default function ImageView() {
   });
   const [pictures, setPictures] = useState<Array<Picture>>([]);
   const [picture, setPicture] = useState<Picture>();
-  const [offset, setOffset] = useState(Number(params?.offset ?? 0));
+  const [offset, setOffset] = useState(Number(0));
   const limit = 20;
   const [total, setTotal] = useState(0);
   const animation = Taro.createAnimation({
@@ -105,6 +106,9 @@ export default function ImageView() {
     await likePicture(pictures[index].id);
   };
   const downloadImage = async (url: string) => {
+    Taro.showLoading({
+      title: "下载中",
+    });
     let res = await Taro.downloadFile({
       url: url,
     });
@@ -124,6 +128,7 @@ export default function ImageView() {
       });
       return "";
     }
+    Taro.hideLoading();
   };
   const saveImage = async () => {
     let url = pictures[index].url;
@@ -148,7 +153,12 @@ export default function ImageView() {
       let result;
       let newPictures;
       if (tag != "undefined") {
-        result = await getPicturesByTag(tag, limit, offset, true);
+        result = await getPicturesByTag(
+          tag,
+          defaultOffset == index ? Math.max(defaultOffset + 1, limit) : limit,
+          offset,
+          true
+        );
         setTotal(result.total);
         newPictures = [...pictures, ...result.data];
       } else if (collection_id !== "undefined") {
@@ -156,7 +166,11 @@ export default function ImageView() {
         setTotal(result.length);
         newPictures = result;
       } else if (favorite) {
-        result = await getFavoritePictures(limit, offset, true);
+        result = await getFavoritePictures(
+          defaultOffset == index ? Math.max(defaultOffset + 1, limit) : limit,
+          offset,
+          true
+        );
         setTotal(result.total);
         newPictures = result.data;
       }
@@ -186,6 +200,7 @@ export default function ImageView() {
   return (
     <View>
       <Swiper
+        value={index}
         onChange={(v) => {
           if (pictures.length == v + 1 && v == index + 1) {
             if (offset + limit < total) {
