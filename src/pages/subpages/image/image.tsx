@@ -155,7 +155,7 @@ export default function ImageView() {
       if (tag != "undefined") {
         result = await getPicturesByTag(
           tag,
-          defaultOffset == index ? Math.max(defaultOffset + 1, limit) : limit,
+          defaultOffset == index ? Math.max(defaultOffset + limit) : limit,
           offset,
           true
         );
@@ -167,7 +167,7 @@ export default function ImageView() {
         newPictures = result;
       } else if (favorite) {
         result = await getFavoritePictures(
-          defaultOffset == index ? Math.max(defaultOffset + 1, limit) : limit,
+          defaultOffset == index ? Math.max(defaultOffset + limit) : limit,
           offset,
           true
         );
@@ -203,8 +203,8 @@ export default function ImageView() {
         value={index}
         onChange={(v) => {
           if (pictures.length == v + 1 && v == index + 1) {
-            if (offset + limit < total) {
-              setOffset(offset + limit);
+            if (offset + v + 1 < total) {
+              setOffset(offset + v + 1);
             } else {
               Taro.showToast({
                 title: "已经是最后一张了",

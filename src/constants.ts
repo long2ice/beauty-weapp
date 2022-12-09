@@ -5,5 +5,5 @@ export const SEARCH = "search";
 export const TOKEN = "token";
 export const USER = "user";
 export const EMAIL = "dev@long2ice.com";
-export const LOGO_URL = API_URL + "/static/image/logo.jpg";
+export const LOGO_URL = "https://minio.long2ice.com/beauty/logo.png";
 export const APP_NAME = "美女图集美女壁纸";
