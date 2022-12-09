@@ -13,6 +13,10 @@ import "./home.scss";
 
 export default function Home() {
   const [hotPictures, setHotPictures] = useState<Array<Picture>>([]);
+  Taro.showShareMenu({
+    withShareTicket: true,
+    showShareItems: ["shareAppMessage", "shareTimeline"],
+  });
   useEffect(() => {
     (async () => {
       Taro.showLoading({

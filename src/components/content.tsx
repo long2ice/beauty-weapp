@@ -31,10 +31,11 @@ function Content(props: ContentProps, ref: Ref<ContentRef>) {
         return;
       }
       setLoading(true);
-      Taro.showLoading({
-        title: "加载中",
-      });
+
       if (offset + limit < total) {
+        Taro.showLoading({
+          title: "加载中",
+        });
         let newOffset = offset + limit;
         setOffset(newOffset);
         let result;
@@ -45,15 +46,14 @@ function Content(props: ContentProps, ref: Ref<ContentRef>) {
         }
         setPictures([...pictures, ...result.data]);
         setTotal(result.total);
+        setLoading(false);
+        Taro.hideLoading();
       } else {
         Taro.showToast({
           title: "没有更多图片了",
           icon: "none",
-          duration: 2000,
         });
       }
-      setLoading(false);
-      Taro.hideLoading();
     },
     tag: tag,
   }));

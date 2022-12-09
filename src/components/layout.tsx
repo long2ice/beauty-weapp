@@ -3,8 +3,17 @@ import { LayoutProps } from "../../types/props";
 import "./layout.scss";
 import MyNavbar from "./navbar";
 import { ConfigProvider } from "@taroify/core";
+import { useEffect, useState } from "react";
+import * as auth from "../services/auth";
 
 export default function Layout(props: LayoutProps) {
+  const [login, setLogin] = useState(false);
+  useEffect(() => {
+    (async () => {
+      await auth.login();
+      setLogin(true);
+    })();
+  }, []);
   return (
     <ConfigProvider
       theme={{
@@ -13,7 +22,7 @@ export default function Layout(props: LayoutProps) {
     >
       <View className="layout">
         <MyNavbar title={props.title}>{props.navbar}</MyNavbar>
-        {props.children}
+        {login && props.children}
       </View>
     </ConfigProvider>
   );

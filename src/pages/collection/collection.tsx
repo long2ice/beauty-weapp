@@ -15,6 +15,10 @@ export default function Collection() {
   const [offset, setOffset] = useState(0);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  Taro.showShareMenu({
+    withShareTicket: true,
+    showShareItems: ["shareAppMessage", "shareTimeline"],
+  });
   useEffect(() => {
     (async () => {
       setLoading(true);

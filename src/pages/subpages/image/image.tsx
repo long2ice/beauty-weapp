@@ -209,7 +209,6 @@ export default function ImageView() {
               Taro.showToast({
                 title: "已经是最后一张了",
                 icon: "none",
-                duration: 2000,
               });
             }
           }
